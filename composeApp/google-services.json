@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "127188955744",
+    "project_id": "sales-pos-system",
+    "storage_bucket": "sales-pos-system.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:127188955744:android:e1ebe2399509534f2b0905",
+        "android_client_info": {
+          "package_name": "com.example.salespossystem"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnvmiW30CwaDHItuu9KDm5DLxa67nn8GA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
