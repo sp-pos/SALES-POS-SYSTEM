@@ -13,8 +13,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
       - name: Build with Gradle
-        run: ./gradlew :composeApp:wasmJsBrowserDistribution
+        run: ./gradlew :composeApp:wasmJsBrowserDistribution --stacktrace
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
