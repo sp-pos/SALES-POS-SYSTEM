@@ -4,83 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SP POS System</title>
-
-    <!-- Explicit Base Path for GitHub Pages -->
-    <script>
-        (function() {
-            var path = window.location.pathname;
-            if (path.includes('/SALES-POS-SYSTEM')) {
-                document.write('<base href="' + path.split('/SALES-POS-SYSTEM')[0] + '/SALES-POS-SYSTEM/">');
-            } else {
-                document.write('<base href="/">');
-            }
-        })();
-    </script>
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@100..900&display=swap" rel="stylesheet">
-
+    <base href="./">
     <style>
         html, body {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background-color: #F8F9FA;
-            font-family: 'Inter', 'Hind Siliguri', sans-serif;
+            width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
+            background-color: #ffffff;
         }
-        #composeApp {
-            width: 100vw;
-            height: 100vh;
-            display: block;
-        }
-        .loader-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            width: 100%;
-            flex-direction: column;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background: #F8F9FA;
-            z-index: 9999;
-        }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #E9ECEF;
-            border-top: 5px solid #000000;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loader-text { margin-top: 20px; font-size: 18px; font-weight: 600; color: #212529; }
+        #composeApp { width: 100%; height: 100%; outline: none; }
     </style>
 </head>
 <body>
-    <div id="loader" class="loader-container">
-        <div class="spinner"></div>
-        <div class="loader-text">SP POS INITIALIZING...</div>
-    </div>
-
     <canvas id="composeApp"></canvas>
-
-    <script src="skiko.js"></script>
     <script src="composeApp.js"></script>
-
-    <script>
-        // Automatic loader removal
-        window.onload = function() {
-            setTimeout(function() {
-                var loader = document.getElementById('loader');
-                if (loader) loader.style.display = 'none';
-            }, 3000);
-        };
-    </script>
 </body>
 </html>

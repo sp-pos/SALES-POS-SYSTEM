@@ -17,6 +17,8 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew clean :composeApp:wasmJsBrowserDistribution --stacktrace
+      - name: Verify build artifacts
+        run: ls -R composeApp/build/dist/wasmJs/productionExecutable
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:

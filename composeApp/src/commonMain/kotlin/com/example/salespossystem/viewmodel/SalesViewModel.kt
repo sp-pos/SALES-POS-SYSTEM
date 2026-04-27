@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModel
 import com.example.salespossystem.data.*
 
 class SalesViewModel : ViewModel() {
-    // Observable Lists
     val products = mutableStateListOf<ProductItem>()
     val cartItems = mutableStateListOf<CartItem>()
     val customers = mutableStateListOf<Customer>()
@@ -19,18 +18,15 @@ class SalesViewModel : ViewModel() {
     val promotions = mutableStateListOf<Promotion>()
     val stockMap = mutableStateMapOf<String, Double>()
     
-    // Company Info
-    var companyName by mutableStateOf("Dina POS")
+    var companyName by mutableStateOf("SP POS")
     var companyAddress by mutableStateOf("")
     var companyPhone by mutableStateOf("")
     var companyTaxNumber by mutableStateOf("")
     var currencySymbol by mutableStateOf("$")
     
-    // Current User
     var currentUser by mutableStateOf<User?>(null)
 
-    // Helper functions for UI (Migrations)
     fun loadDataFromDatabase() {
-        // To be implemented with actual Firebase logic
+        // Initialization logic
     }
 }

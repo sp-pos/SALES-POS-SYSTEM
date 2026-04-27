@@ -22,11 +22,8 @@ import com.example.salespossystem.ui.theme.SALESPOSSYSTEMTheme
 import com.example.salespossystem.viewmodel.SalesViewModel
 
 sealed class Screen(val title: String, val icon: ImageVector) {
-    // Auth Screens
     object Login : Screen("Login", Icons.Default.Lock)
     object Signup : Screen("Signup", Icons.Default.PersonAdd)
-    
-    // Dashboard Screens
     object Reporting : Screen("Reporting", Icons.Default.BarChart)
     object Promotions : Screen("Promotions", Icons.Default.LocalOffer)
     object Stock : Screen("Stock", Icons.Default.Inventory)
@@ -125,7 +122,7 @@ fun Sidebar(selectedScreen: Screen, onScreenSelected: (Screen) -> Unit, onLogout
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(Icons.Default.Calculate, null, Modifier.size(32.dp), tint = Color.Black)
             Spacer(Modifier.width(12.dp))
-            Text("Dina POS", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            Text("SP POS", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         }
         
         Spacer(Modifier.height(48.dp))
