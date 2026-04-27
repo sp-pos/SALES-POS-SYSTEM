@@ -4,7 +4,7 @@ import com.example.salespossystem.App
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
-    CanvasBasedWindow(canvasElementId = "composeApp", title = "Dina POS") {
+    CanvasBasedWindow(canvasElementId = "composeApp", title = "SP POS") {
         App()
     }
 }
