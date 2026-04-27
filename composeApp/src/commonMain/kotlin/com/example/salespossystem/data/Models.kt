@@ -15,7 +15,7 @@ data class User(
     val longitude: Double = 0.0,
     val shopName: String = "",
     val address: String = "",
-    val lastActiveMillis: Long? = null, // Using Long for timestamp in common
+    val lastActiveMillis: Long? = null,
     
     val idCardNumber: String = "",
     val iqamaId: String = "",
@@ -31,39 +31,70 @@ data class User(
 )
 
 @Serializable
-data class Sale(
-    val saleId: String = "",
-    val adminId: String = "",
-    val staffId: String = "",
-    val staffName: String = "",
-    val customerName: String = "",
-    val customerPhone: String = "",
-    val discount: Double = 0.0,
-    val payableAmount: Double = 0.0,
-    val totalAmount: Double = 0.0,
-    val paymentType: String = "",
-    val items: List<SaleItem> = emptyList(),
-    val latitude: Double = 0.0,
-    val longitude: Double = 0.0,
-    val timestampMillis: Long? = null
+data class ProductItem(
+    val code: String = "",
+    val name: String = "",
+    val group: String = "",
+    val barcode: String = "",
+    val cost: String = "",
+    val salePrice: String = "",
+    val active: Boolean = false,
+    val unit: String = "",
+    val created: String = "",
+    val updated: String = "",
+    val imageUrl: String = ""
 )
 
 @Serializable
-data class SaleItem(
+data class CartItem(
     val productId: String = "",
     val productName: String = "",
     val quantity: Double = 0.0,
     val price: Double = 0.0,
-    val total: Double = 0.0
+    val unit: String = ""
 )
 
 @Serializable
-data class ProductItem(
-    val barcode: String = "",
+data class Customer(
+    val id: String = "",
     val name: String = "",
-    val cost: String = "",
-    val salePrice: String = "",
-    val unit: String = ""
+    val phone: String = "",
+    val address: String = "",
+    val taxNumber: String = "",
+    val code: String = "",
+    val userName: String = "Admin"
+)
+
+@Serializable
+data class Invoice(
+    val invoiceNumber: String = "",
+    val date: String = "",
+    val items: List<CartItem> = emptyList(),
+    val subtotal: Double = 0.0,
+    val discount: Double = 0.0,
+    val totalAmount: Double = 0.0,
+    val paymentMethod: String = "",
+    val companyName: String = "",
+    val companyAddress: String = "",
+    val companyPhone: String = "",
+    val companyTaxNumber: String = "",
+    val customerName: String = "",
+    val customerPhone: String = "",
+    val isPurchase: Boolean = false,
+    val customerAddress: String = "",
+    val customerTaxNumber: String = "",
+    val userName: String = "Admin"
+)
+
+@Serializable
+data class Expense(
+    val id: Long = 0L,
+    val date: String = "",
+    val category: String = "",
+    val amount: Double = 0.0,
+    val description: String = "",
+    val userName: String = "",
+    val paymentMethod: String = "CASH"
 )
 
 @Serializable
@@ -75,4 +106,26 @@ data class Promotion(
     val discountAmount: Double = 0.0,
     var isActive: Boolean = true,
     val appliedProductBarcodes: List<String> = emptyList()
+)
+
+@Serializable
+data class TaxRateItem(
+    val code: String = "",
+    val name: String = "",
+    val rate: String = "",
+    val enabled: Boolean = false,
+    val fixed: Boolean = false
+)
+
+@Serializable
+data class PaymentTypeItem(
+    val name: String = "",
+    val position: String = "",
+    val enabled: Boolean = false,
+    val quickPayment: Boolean = false,
+    val customerRequired: Boolean = false,
+    val changeAllowed: Boolean = false,
+    val markAsPaid: Boolean = false,
+    val printReceipt: Boolean = false,
+    val shortcutKey: String = ""
 )

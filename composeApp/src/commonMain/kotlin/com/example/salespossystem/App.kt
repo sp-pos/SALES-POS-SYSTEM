@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -15,15 +16,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.salespossystem.ui.*
 import com.example.salespossystem.ui.theme.SALESPOSSYSTEMTheme
+import com.example.salespossystem.viewmodel.SalesViewModel
 
 sealed class Screen(val title: String, val icon: ImageVector) {
-    // Auth Screens (Hidden from Nav)
+    // Auth Screens
     object Login : Screen("Login", Icons.Default.Lock)
     object Signup : Screen("Signup", Icons.Default.PersonAdd)
     
-    // Dashboard Screens (Visible in Nav)
+    // Dashboard Screens
     object Reporting : Screen("Reporting", Icons.Default.BarChart)
     object Promotions : Screen("Promotions", Icons.Default.LocalOffer)
     object Stock : Screen("Stock", Icons.Default.Inventory)
@@ -34,20 +37,19 @@ sealed class Screen(val title: String, val icon: ImageVector) {
 
 @Composable
 fun App() {
+    val viewModel: SalesViewModel = viewModel()
     var isLoggedIn by remember { mutableStateOf(false) }
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Login) }
     
     SALESPOSSYSTEMTheme {
         Surface(color = Color(0xFFF8F9FA)) {
             if (!isLoggedIn) {
-                // Auth Flow
                 AuthContent(
                     currentScreen = currentScreen,
                     onScreenChange = { currentScreen = it },
                     onLoginSuccess = { isLoggedIn = true; currentScreen = Screen.Reporting }
                 )
             } else {
-                // Dashboard Flow
                 BoxWithConstraints {
                     val isWideScreen = maxWidth > 900.dp
                     
@@ -62,7 +64,7 @@ fun App() {
                         
                         Column(Modifier.weight(1f).fillMaxHeight()) {
                             Box(Modifier.weight(1f)) {
-                                MainDashboardContent(currentScreen)
+                                MainDashboardContent(currentScreen, viewModel)
                             }
                             
                             if (!isWideScreen) {
@@ -85,7 +87,7 @@ fun AuthContent(currentScreen: Screen, onScreenChange: (Screen) -> Unit, onLogin
         is Screen.Login -> LoginScreen(
             onLoginSuccess = onLoginSuccess,
             onGoToSignup = { onScreenChange(Screen.Signup) },
-            onLoginClick = { _, _, _, onSuccess -> onSuccess() } // Auto-login for now
+            onLoginClick = { _, _, _, onSuccess -> onSuccess() }
         )
         is Screen.Signup -> AdminSignupScreen(
             onSignupSuccess = onLoginSuccess,
@@ -97,11 +99,11 @@ fun AuthContent(currentScreen: Screen, onScreenChange: (Screen) -> Unit, onLogin
 }
 
 @Composable
-fun MainDashboardContent(currentScreen: Screen) {
+fun MainDashboardContent(currentScreen: Screen, viewModel: SalesViewModel) {
     when (currentScreen) {
         is Screen.Reporting -> ReportingScreen()
         is Screen.Promotions -> PromotionsScreen(emptyList(), emptyList(), {_,_,_,_,_ ->}, {}, {_,_ ->}, {})
-        is Screen.Stock -> StockScreen()
+        is Screen.Stock -> StockScreen(viewModel)
         is Screen.Customers -> CustomerSupplierScreen()
         is Screen.Expenses -> ExpenseScreen()
         is Screen.Items -> ItemDataEntryScreen()
@@ -143,7 +145,7 @@ fun Sidebar(selectedScreen: Screen, onScreenSelected: (Screen) -> Unit, onLogout
             onClick = onLogout,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Icon(Icons.Default.Logout, null, tint = Color.Red)
+            Icon(Icons.AutoMirrored.Filled.Logout, null, tint = Color.Red)
             Spacer(Modifier.width(12.dp))
             Text("Logout", color = Color.Red)
         }
