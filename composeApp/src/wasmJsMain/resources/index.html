@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SP POS System</title>
 
-    <!-- Link to Google Fonts -->
+    <!-- Google Fonts for Bengali and English -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -13,26 +13,49 @@
     <script src="skiko.js"></script>
     <style>
         html, body {
-            width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
             background-color: #F8F9FA;
             font-family: 'Inter', 'Hind Siliguri', sans-serif;
         }
-        #composeApp { width: 100%; height: 100%; outline: none; }
-        .loading-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background: white; z-index: 1000;
+        #composeApp {
+            width: 100%;
+            height: 100%;
+            outline: none;
+        }
+        /* Loader styles */
+        .loading-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: white;
+            z-index: 1000;
         }
         .spinner {
-            width: 40px; height: 40px; border: 4px solid #f3f3f3;
-            border-top: 4px solid #000; border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #000;
+            border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
-    <div id="loader" class="loading-screen">
+    <div id="loader" class="loading-container">
         <div class="spinner"></div>
         <p style="margin-top: 20px; font-weight: 600;">SP POS INITIALIZING...</p>
     </div>

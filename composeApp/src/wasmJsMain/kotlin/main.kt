@@ -1,12 +1,10 @@
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.window.ComposeViewport
+import androidx.compose.ui.window.CanvasBasedWindow
 import com.example.salespossystem.App
-import kotlinx.browser.document
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
-    val body = document.body ?: return
-    ComposeViewport(body) {
+    CanvasBasedWindow(canvasElementId = "composeApp", title = "SP POS System") {
         App()
     }
 }
