@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SP POS System</title>
 
-    <!-- Google Fonts for Bengali and English -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
-    <script src="skiko.js"></script>
     <style>
         html, body {
             width: 100%;
@@ -26,7 +25,6 @@
             height: 100%;
             outline: none;
         }
-        /* Loader styles */
         .loading-container {
             position: fixed;
             top: 0;
@@ -39,6 +37,11 @@
             align-items: center;
             background: white;
             z-index: 1000;
+            transition: opacity 0.3s ease-out;
+        }
+        .loading-container.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
         .spinner {
             width: 40px;
@@ -55,23 +58,32 @@
     </style>
 </head>
 <body>
-    <div id="loader" class="loading-container">
-        <div class="spinner"></div>
-        <p style="margin-top: 20px; font-weight: 600;">SP POS INITIALIZING...</p>
-    </div>
+<div id="loader" class="loading-container">
+    <div class="spinner"></div>
+    <p style="margin-top: 20px; font-weight: 600;">SP POS INITIALIZING...</p>
+</div>
 
-    <canvas id="composeApp"></canvas>
+<canvas id="composeApp"></canvas>
 
-    <script src="composeApp.js"></script>
+<script src="skiko.js"></script>
+<script src="composeApp.js"></script>
 
-    <script>
-        // Smoothly hide loader once app is ready
-        window.onload = () => {
+<script>
+    // Global function যা composeApp.js থেকে কল করবে
+    window.hideLoader = function() {
+        const loader = document.getElementById('loader');
+        if (loader) {
+            loader.classList.add('hidden');
             setTimeout(() => {
-                const l = document.getElementById('loader');
-                if (l) l.style.display = 'none';
-            }, 3000);
-        };
-    </script>
+                loader.remove();
+            }, 300);
+        }
+    };
+
+    // Fallback: 5 সেকেন্ড পর লোডার স্বয়ংক্রিয়ভাবে লুকান
+    setTimeout(() => {
+        window.hideLoader?.();
+    }, 5000);
+</script>
 </body>
 </html>
