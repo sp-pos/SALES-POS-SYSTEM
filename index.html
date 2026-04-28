@@ -58,32 +58,32 @@
     </style>
 </head>
 <body>
-    <div id="loader" class="loading-container">
-        <div class="spinner"></div>
-        <p style="margin-top: 20px; font-weight: 600;">SP POS INITIALIZING...</p>
-    </div>
+<div id="loader" class="loading-container">
+    <div class="spinner"></div>
+    <p style="margin-top: 20px; font-weight: 600;">SP POS INITIALIZING...</p>
+</div>
 
-    <canvas id="composeApp"></canvas>
+<canvas id="composeApp"></canvas>
 
-    <script src="skiko.js"></script>
-    <script src="composeApp.js"></script>
+<script src="skiko.js"></script>
+<script src="composeApp.js"></script>
 
-    <script>
-        // Global function যা composeApp.js থেকে কল করবে
-        window.hideLoader = function() {
-            const loader = document.getElementById('loader');
-            if (loader) {
-                loader.classList.add('hidden');
-                setTimeout(() => {
-                    loader.remove();
-                }, 300);
-            }
-        };
+<script>
+    // Global function যা composeApp.js থেকে কল করবে
+    window.hideLoader = function() {
+        const loader = document.getElementById('loader');
+        if (loader) {
+            loader.classList.add('hidden');
+            setTimeout(() => {
+                loader.remove();
+            }, 300);
+        }
+    };
 
-        // Fallback: 5 সেকেন্ড পর লোডার স্বয়ংক্রিয়ভাবে লুকান
-        setTimeout(() => {
-            window.hideLoader?.();
-        }, 5000);
-    </script>
+    // Fallback: 5 সেকেন্ড পর লোডার স্বয়ংক্রিয়ভাবে লুকান
+    setTimeout(() => {
+        window.hideLoader?.();
+    }, 5000);
+</script>
 </body>
 </html>
