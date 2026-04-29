@@ -142,7 +142,7 @@ fun DashboardRouter(screen: Screen, viewModel: SalesViewModel, onNavigate: (Scre
         is Screen.TaxRates -> TaxRatesScreen(viewModel)
         is Screen.PaymentTypes -> PaymentTypesScreen(viewModel)
         is Screen.UsersSecurity -> UsersSecurityScreen()
-        is Screen.AdminStaff -> AdminStaffManagementScreen()
+        is Screen.AdminStaff -> AdminStaffManagementScreen(viewModel)
         is Screen.DamageProducts -> DamageProductScreen()
         is Screen.Documents -> DocumentScreen()
         else -> HomeScreen()
