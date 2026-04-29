@@ -160,11 +160,20 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun SALESPOSSYSTEMApp(viewModel: SalesViewModel, onLogout: () -> Unit) {
     val isAdmin = viewModel.currentUser?.accessLevel == "1"
-    val initialDestination = if (isAdmin) AppDestinations.DASHBOARD else AppDestinations.HOME
+    val initialDestination = remember(isAdmin) { 
+        if (isAdmin) AppDestinations.DASHBOARD else AppDestinations.HOME 
+    }
     
     // Navigation History Stack
     val navigationHistory = remember { mutableStateListOf<AppDestinations>() }
     var currentDestination by rememberSaveable { mutableStateOf(initialDestination) }
+
+    // Sync currentDestination when initialDestination changes (e.g. after auto-login)
+    LaunchedEffect(initialDestination) {
+        if (navigationHistory.isEmpty()) {
+            currentDestination = initialDestination
+        }
+    }
     
     // Helper function for navigation that keeps track of history
     val navigateTo: (AppDestinations) -> Unit = { destination ->

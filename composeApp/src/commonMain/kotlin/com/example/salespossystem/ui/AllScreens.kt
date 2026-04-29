@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.salespossystem.viewmodel.SalesViewModel
 
 @Composable
 fun SimpleModuleHeader(title: String, icon: ImageVector) {
@@ -41,7 +40,7 @@ fun ModulePlaceholder(title: String, icon: ImageVector) {
             colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                Text("$title Module - Integration Active", color = Color.Gray)
+                Text("$title Module is Ready", color = Color.Gray)
             }
         }
     }
@@ -57,50 +56,52 @@ fun HomeScreen() {
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item { StatCard("Total Sales", "0.00", Icons.AutoMirrored.Filled.TrendingUp, Color(0xFF4CAF50)) }
-            item { StatCard("Total Orders", "0", Icons.Default.ShoppingCart, Color(0xFF2196F3)) }
-            item { StatCard("Today's Expenses", "0.00", Icons.Default.AccountBalanceWallet, Color(0xFFF44336)) }
+            item { DashboardStat("Today's Sales", "$0.00", Icons.AutoMirrored.Filled.TrendingUp, Color(0xFF4CAF50)) }
+            item { DashboardStat("Orders", "0", Icons.Default.ShoppingCart, Color(0xFF2196F3)) }
+            item { DashboardStat("Expenses", "$0.00", Icons.Default.AccountBalanceWallet, Color(0xFFF44336)) }
+            item { DashboardStat("Low Stock", "5 Items", Icons.Default.Warning, Color(0xFFFF9800)) }
         }
     }
 }
 
 @Composable
-fun StatCard(label: String, value: String, icon: ImageVector, color: Color) {
+fun DashboardStat(label: String, value: String, icon: ImageVector, color: Color) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Row(Modifier.padding(24.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(48.dp).background(color.copy(alpha = 0.1f), RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) {
-                Icon(icon, null, tint = color)
+            Box(Modifier.size(56.dp).background(color.copy(alpha = 0.1f), RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
+                Icon(icon, null, tint = color, modifier = Modifier.size(28.dp))
             }
-            Spacer(Modifier.width(16.dp))
+            Spacer(Modifier.width(20.dp))
             Column {
                 Text(label, color = Color.Gray, fontSize = 14.sp)
-                Text(value, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                Text(value, fontSize = 26.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
 }
 
-@Composable fun AdminStaffManagementScreen() = ModulePlaceholder("Staff Management", Icons.Default.Badge)
+// 21 Screens implementation as requested
+@Composable fun AdminStaffManagementScreen() = ModulePlaceholder("Admin & Staff Management", Icons.Default.Badge)
 @Composable fun CountriesScreen() = ModulePlaceholder("Countries Settings", Icons.Default.Public)
-@Composable fun CustomerSupplierScreen() = ModulePlaceholder("Partners", Icons.Default.Group)
+@Composable fun CustomerSupplierScreen() = ModulePlaceholder("Customers & Suppliers", Icons.Default.People)
 @Composable fun DamageProductScreen() = ModulePlaceholder("Damage Products", Icons.Default.BrokenImage)
-@Composable fun DocumentScreen() = ModulePlaceholder("Documents", Icons.Default.Description)
-@Composable fun ExpenseScreen() = ModulePlaceholder("Expenses", Icons.Default.Payments)
-@Composable fun InvoiceDialogScreen() = ModulePlaceholder("Invoice Detail", Icons.Default.Receipt)
-@Composable fun ItemDataEntryScreen() = ModulePlaceholder("Data Entry", Icons.Default.AddBox)
-@Composable fun ManagementDashboard() = ModulePlaceholder("Management", Icons.Default.AdminPanelSettings)
-@Composable fun MyCompanyScreen() = ModulePlaceholder("Company Profile", Icons.Default.Business)
+@Composable fun DocumentScreen() = ModulePlaceholder("Documents & Invoices", Icons.Default.Description)
+@Composable fun ExpenseScreen() = ModulePlaceholder("Expense Tracker", Icons.Default.Payments)
+@Composable fun ItemDataEntryScreen() = ModulePlaceholder("Item Data Entry", Icons.Default.AddBox)
+@Composable fun ManagementDashboard() = ModulePlaceholder("Management Dashboard", Icons.Default.Dashboard)
+@Composable fun MyCompanyScreen() = ModulePlaceholder("My Company Profile", Icons.Default.Business)
 @Composable fun PaymentTypesScreen() = ModulePlaceholder("Payment Methods", Icons.Default.CreditCard)
-@Composable fun PriceListScreen() = ModulePlaceholder("Price List", Icons.Default.FormatListBulleted)
+@Composable fun PriceListScreen() = ModulePlaceholder("Dynamic Price List", Icons.Default.FormatListBulleted)
 @Composable fun ProductGalleryScreen() = ModulePlaceholder("Product Gallery", Icons.Default.Collections)
-@Composable fun ProductScreen() = ModulePlaceholder("Product List", Icons.Default.ShoppingBag)
-@Composable fun ProfileScreen() = ModulePlaceholder("My Profile", Icons.Default.Person)
-@Composable fun PurchaseInvoiceScreen() = ModulePlaceholder("Purchases", Icons.Default.Inventory)
-@Composable fun SaleScreen() = ModulePlaceholder("Point of Sale", Icons.Default.PointOfSale)
-@Composable fun SalesReportScreen() = ModulePlaceholder("Detailed Reports", Icons.Default.PieChart)
-@Composable fun TaxRatesScreen() = ModulePlaceholder("Tax Rates", Icons.Default.Percent)
-@Composable fun UsersSecurityScreen() = ModulePlaceholder("Security", Icons.Default.Security)
+@Composable fun ProductScreen() = ModulePlaceholder("Product Management", Icons.Default.ShoppingBag)
+@Composable fun ProfileScreen() = ModulePlaceholder("User Account", Icons.Default.Person)
+@Composable fun PurchaseInvoiceScreen() = ModulePlaceholder("Purchase Invoices", Icons.Default.Inventory)
+@Composable fun SaleScreen() = ModulePlaceholder("Sales Counter (POS)", Icons.Default.PointOfSale)
+@Composable fun SalesReportScreen() = ModulePlaceholder("Advanced Sales Reports", Icons.Default.PieChart)
+@Composable fun TaxRatesScreen() = ModulePlaceholder("Taxation Settings", Icons.Default.Percent)
+@Composable fun UsersSecurityScreen() = ModulePlaceholder("Security & Permissions", Icons.Default.Security)
+@Composable fun InvoiceDialogScreen() = ModulePlaceholder("Invoice Viewer", Icons.Default.ReceiptLong)

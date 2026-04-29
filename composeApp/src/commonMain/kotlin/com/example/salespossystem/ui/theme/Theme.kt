@@ -38,7 +38,11 @@ fun SALESPOSSYSTEMTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+        typography = Typography
+    ) {
+        androidx.compose.material3.Surface(
+            color = colorScheme.background,
+            content = content
+        )
+    }
 }

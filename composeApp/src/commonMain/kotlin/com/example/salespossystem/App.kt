@@ -29,22 +29,24 @@ sealed class Screen(val title: String, val icon: ImageVector) {
     object Signup : Screen("Signup", Icons.Default.PersonAdd)
     
     // Dashboard Screens
-    object Home : Screen("Home", Icons.Default.Home)
-    object Sale : Screen("Sale", Icons.Default.PointOfSale)
-    object Products : Screen("Products", Icons.Default.ShoppingBag)
-    object Stock : Screen("Stock", Icons.Default.Inventory)
-    object Customers : Screen("Partners", Icons.Default.Group)
+    object Home : Screen("Home Dashboard", Icons.Default.Home)
+    object Sale : Screen("Point of Sale", Icons.Default.PointOfSale)
+    object Products : Screen("Product Management", Icons.Default.ShoppingBag)
+    object Stock : Screen("Stock Inventory", Icons.Default.Inventory)
+    object Customers : Screen("Partners", Icons.Default.People)
     object Expenses : Screen("Expenses", Icons.Default.Payments)
     object Promotions : Screen("Promotions", Icons.Default.LocalOffer)
     object Reporting : Screen("Reporting", Icons.Default.BarChart)
     object ItemsEntry : Screen("Data Entry", Icons.Default.AddBox)
-    object Management : Screen("Management", Icons.Default.Dashboard)
+    object Management : Screen("Management Dashboard", Icons.Default.Dashboard)
     object Company : Screen("My Company", Icons.Default.Business)
     object PriceList : Screen("Price List", Icons.Default.FormatListBulleted)
     object TaxRates : Screen("Tax Rates", Icons.Default.Percent)
-    object PaymentTypes : Screen("Payments", Icons.Default.CreditCard)
-    object UsersSecurity : Screen("Security", Icons.Default.Security)
-    object AdminStaff : Screen("Staff", Icons.Default.Badge)
+    object PaymentTypes : Screen("Payment Types", Icons.Default.CreditCard)
+    object UsersSecurity : Screen("Security Settings", Icons.Default.Security)
+    object AdminStaff : Screen("Staff Management", Icons.Default.Badge)
+    object DamageProducts : Screen("Damage Products", Icons.Default.BrokenImage)
+    object Documents : Screen("Documents", Icons.Default.Description)
 }
 
 @Composable
@@ -56,39 +58,25 @@ fun App() {
     SALESPOSSYSTEMTheme {
         Surface(color = Color(0xFFF8F9FA)) {
             if (!isLoggedIn) {
-                // Auth Flow
-                AuthContent(
+                AuthFlow(
                     currentScreen = currentScreen,
                     onScreenChange = { currentScreen = it },
                     onLoginSuccess = { isLoggedIn = true; currentScreen = Screen.Home }
                 )
             } else {
-                // Dashboard Flow
-                BoxWithConstraints {
-                    val isWideScreen = maxWidth > 1100.dp
-                    
-                    Row(Modifier.fillMaxSize()) {
-                        Sidebar(
-                            selectedScreen = currentScreen,
-                            onScreenSelected = { currentScreen = it },
-                            onLogout = { isLoggedIn = false; currentScreen = Screen.Login },
-                            isCollapsed = !isWideScreen
-                        )
-                        
-                        Column(Modifier.weight(1f).fillMaxHeight()) {
-                            Box(Modifier.weight(1f)) {
-                                MainDashboardContent(currentScreen, viewModel)
-                            }
-                        }
-                    }
-                }
+                DashboardFlow(
+                    currentScreen = currentScreen,
+                    onScreenChange = { currentScreen = it },
+                    onLogout = { isLoggedIn = false; currentScreen = Screen.Login },
+                    viewModel = viewModel
+                )
             }
         }
     }
 }
 
 @Composable
-fun AuthContent(currentScreen: Screen, onScreenChange: (Screen) -> Unit, onLoginSuccess: () -> Unit) {
+fun AuthFlow(currentScreen: Screen, onScreenChange: (Screen) -> Unit, onLoginSuccess: () -> Unit) {
     when (currentScreen) {
         is Screen.Login -> LoginScreen(
             onLoginSuccess = onLoginSuccess,
@@ -105,8 +93,30 @@ fun AuthContent(currentScreen: Screen, onScreenChange: (Screen) -> Unit, onLogin
 }
 
 @Composable
-fun MainDashboardContent(currentScreen: Screen, viewModel: SalesViewModel) {
-    when (currentScreen) {
+fun DashboardFlow(currentScreen: Screen, onScreenChange: (Screen) -> Unit, onLogout: () -> Unit, viewModel: SalesViewModel) {
+    BoxWithConstraints {
+        val isWideScreen = maxWidth > 1100.dp
+        
+        Row(Modifier.fillMaxSize()) {
+            Sidebar(
+                selectedScreen = currentScreen,
+                onScreenSelected = onScreenChange,
+                onLogout = onLogout,
+                isCollapsed = !isWideScreen
+            )
+            
+            Column(Modifier.weight(1f).fillMaxHeight()) {
+                Box(Modifier.weight(1f)) {
+                    DashboardRouter(currentScreen, viewModel)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DashboardRouter(screen: Screen, viewModel: SalesViewModel) {
+    when (screen) {
         is Screen.Home -> HomeScreen()
         is Screen.Sale -> SaleScreen()
         is Screen.Products -> ProductScreen()
@@ -123,28 +133,32 @@ fun MainDashboardContent(currentScreen: Screen, viewModel: SalesViewModel) {
         is Screen.PaymentTypes -> PaymentTypesScreen()
         is Screen.UsersSecurity -> UsersSecurityScreen()
         is Screen.AdminStaff -> AdminStaffManagementScreen()
+        is Screen.DamageProducts -> DamageProductScreen()
+        is Screen.Documents -> DocumentScreen()
         else -> HomeScreen()
     }
 }
 
 @Composable
 fun Sidebar(selectedScreen: Screen, onScreenSelected: (Screen) -> Unit, onLogout: () -> Unit, isCollapsed: Boolean) {
-    val navScreens = listOf(
+    val menuItems = listOf(
         Screen.Home, Screen.Sale, Screen.Products, Screen.Stock, 
-        Screen.Customers, Screen.Expenses, Screen.Promotions, Screen.Reporting,
+        Screen.DamageProducts, Screen.Documents, Screen.Customers, 
+        Screen.Expenses, Screen.Promotions, Screen.Reporting,
         Screen.ItemsEntry, Screen.Management, Screen.Company, Screen.PriceList,
         Screen.TaxRates, Screen.PaymentTypes, Screen.UsersSecurity, Screen.AdminStaff
     )
     
-    val width = if (isCollapsed) 80.dp else 260.dp
+    val sidebarWidth = if (isCollapsed) 80.dp else 280.dp
     
     Column(
         Modifier
-            .width(width)
+            .width(sidebarWidth)
             .fillMaxHeight()
             .background(Color.White)
             .padding(vertical = 24.dp, horizontal = if (isCollapsed) 8.dp else 16.dp)
     ) {
+        // App Logo/Name
         if (!isCollapsed) {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 8.dp)) {
                 Icon(Icons.Default.Calculate, null, Modifier.size(32.dp), tint = Color.Black)
@@ -157,8 +171,9 @@ fun Sidebar(selectedScreen: Screen, onScreenSelected: (Screen) -> Unit, onLogout
         
         Spacer(Modifier.height(32.dp))
         
+        // Navigation Items
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
-            navScreens.forEach { screen ->
+            menuItems.forEach { screen ->
                 SidebarItem(
                     screen = screen,
                     isSelected = selectedScreen == screen,
@@ -171,6 +186,7 @@ fun Sidebar(selectedScreen: Screen, onScreenSelected: (Screen) -> Unit, onLogout
         
         Spacer(Modifier.height(16.dp))
         
+        // Logout Button
         TextButton(
             onClick = onLogout,
             modifier = Modifier.fillMaxWidth()
