@@ -108,7 +108,7 @@ fun DashboardFlow(currentScreen: Screen, onScreenChange: (Screen) -> Unit, onLog
             
             Column(Modifier.weight(1f).fillMaxHeight()) {
                 Box(Modifier.weight(1f)) {
-                    DashboardRouter(currentScreen, viewModel)
+                    DashboardRouter(currentScreen, viewModel, onScreenChange)
                 }
             }
         }
@@ -116,7 +116,7 @@ fun DashboardFlow(currentScreen: Screen, onScreenChange: (Screen) -> Unit, onLog
 }
 
 @Composable
-fun DashboardRouter(screen: Screen, viewModel: SalesViewModel) {
+fun DashboardRouter(screen: Screen, viewModel: SalesViewModel, onNavigate: (Screen) -> Unit) {
     when (screen) {
         is Screen.Home -> HomeScreen()
         is Screen.Sale -> SaleScreen(viewModel)
@@ -136,9 +136,9 @@ fun DashboardRouter(screen: Screen, viewModel: SalesViewModel) {
         )
         is Screen.Reporting -> ReportingScreen(viewModel)
         is Screen.ItemsEntry -> ItemDataEntryScreen(viewModel)
-        is Screen.Management -> ManagementDashboard(viewModel)
+        is Screen.Management -> ManagementDashboard(viewModel, onNavigate)
         is Screen.Company -> MyCompanyScreen(viewModel)
-        is Screen.PriceList -> PriceListScreen()
+        is Screen.PriceList -> PriceListScreen(viewModel)
         is Screen.TaxRates -> TaxRatesScreen(viewModel)
         is Screen.PaymentTypes -> PaymentTypesScreen(viewModel)
         is Screen.UsersSecurity -> UsersSecurityScreen()

@@ -19,6 +19,7 @@ class SalesViewModel : ViewModel() {
     val promotions = mutableStateListOf<Promotion>()
     val paymentTypes = mutableStateListOf<PaymentTypeItem>()
     val taxRates = mutableStateListOf<TaxRateItem>()
+    val users = mutableStateListOf<User>()
     val stockMap = mutableStateMapOf<String, Double>()
     
     var companyName by mutableStateOf("SP POS")
@@ -30,6 +31,7 @@ class SalesViewModel : ViewModel() {
     var currentUser by mutableStateOf<User?>(null)
     var selectedPaymentMethod by mutableStateOf("CASH")
     var discountAmount by mutableDoubleStateOf(0.0)
+    var lastInvoice by mutableStateOf<Invoice?>(null)
 
     fun addToCart(product: ProductItem) {
         val existing = cartItems.find { it.productId == product.barcode }
@@ -92,7 +94,10 @@ class SalesViewModel : ViewModel() {
 
     // Customer Management
     fun addCustomer(customer: Customer) {
-        customers.add(customer)
+        val newCustomer = if (customer.id.isEmpty()) {
+            customer.copy(id = "CUST-${(1000..9999).random()}")
+        } else customer
+        customers.add(newCustomer)
     }
 
     fun deleteCustomer(id: String) {
@@ -109,7 +114,10 @@ class SalesViewModel : ViewModel() {
 
     // Expense Management
     fun addExpense(expense: Expense) {
-        expenses.add(expense)
+        val newExpense = if (expense.id == 0L) {
+            expense.copy(id = (expense.category.hashCode() + expense.amount.hashCode() + (0..100000).random()).toLong())
+        } else expense
+        expenses.add(0, newExpense)
     }
 
     fun deleteExpense(id: Long) {
@@ -164,6 +172,54 @@ class SalesViewModel : ViewModel() {
         companyAddress = address
         companyPhone = phone
         companyTaxNumber = taxNo
+    }
+
+    // User/Staff Management
+    fun addUser(user: User) {
+        users.add(user)
+    }
+
+    fun deleteUser(uid: String) {
+        users.removeAll { it.uid == uid }
+    }
+
+    fun processPayment() {
+        if (cartItems.isEmpty()) return
+        
+        val invoiceNumber = "INV-${(10000..99999).random()}"
+        val date = "Today" // In a real app, use a proper date formatter
+        
+        val newInvoice = Invoice(
+            invoiceNumber = invoiceNumber,
+            date = date,
+            items = cartItems.toList(),
+            subtotal = getSubtotal(),
+            discount = discountAmount,
+            totalAmount = getTotal(),
+            paymentMethod = selectedPaymentMethod,
+            companyName = companyName,
+            companyAddress = companyAddress,
+            companyPhone = companyPhone,
+            companyTaxNumber = companyTaxNumber,
+            customerName = "Walk-in Customer",
+            customerPhone = "",
+            userName = currentUser?.name ?: "Admin"
+        )
+        
+        allInvoices.add(0, newInvoice)
+        lastInvoice = newInvoice
+        
+        // Update stock (optional demo logic)
+        cartItems.forEach { item ->
+            val currentStock = stockMap[item.productId] ?: 100.0
+            stockMap[item.productId] = currentStock - item.quantity
+        }
+        
+        clearCart()
+    }
+
+    fun clearInvoice() {
+        lastInvoice = null
     }
 
     fun loadDataFromDatabase() {

@@ -24,6 +24,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.text.style.TextAlign
 
 @Composable
 fun SimpleModuleHeader(title: String, icon: ImageVector) {
@@ -110,7 +111,152 @@ fun DashboardStat(label: String, value: String, icon: ImageVector, color: Color)
     }
 }
 
-@Composable fun AdminStaffManagementScreen() = ModulePlaceholder("Admin & Staff Management", Icons.Default.Badge)
+@Composable
+fun AdminStaffManagementScreen(viewModel: SalesViewModel) {
+    var showAddDialog by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
+    
+    val filteredStaff = viewModel.users.filter { 
+        it.name.contains(searchQuery, ignoreCase = true) || it.email.contains(searchQuery, ignoreCase = true)
+    }
+
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            SimpleModuleHeader("Staff Management", Icons.Default.Badge)
+            Button(
+                onClick = { showAddDialog = true },
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF673AB7))
+            ) {
+                Icon(Icons.Default.PersonAdd, null)
+                Spacer(Modifier.width(8.dp))
+                Text("Add New Staff")
+            }
+        }
+
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            label = { Text("Search staff by name or email...") },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+            leadingIcon = { Icon(Icons.Default.Search, null) },
+            shape = RoundedCornerShape(12.dp)
+        )
+
+        Card(
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
+        ) {
+            if (filteredStaff.isEmpty()) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No staff members found.", color = Color.Gray)
+                }
+            } else {
+                LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    items(filteredStaff) { staff ->
+                        StaffItemRow(staff, onDelete = { viewModel.deleteUser(staff.uid) })
+                    }
+                }
+            }
+        }
+    }
+
+    if (showAddDialog) {
+        AddStaffDialog(
+            onDismiss = { showAddDialog = false },
+            onConfirm = { user ->
+                viewModel.addUser(user)
+                showAddDialog = false
+            }
+        )
+    }
+}
+
+@Composable
+fun StaffItemRow(user: User, onDelete: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF3E5F5))
+    ) {
+        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(40.dp).background(Color(0xFFEDE7F6), CircleShape), contentAlignment = Alignment.Center) {
+                Icon(Icons.Default.Person, null, tint = Color(0xFF673AB7))
+            }
+            Spacer(Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(user.name, fontWeight = FontWeight.Bold)
+                Text(user.email, fontSize = 12.sp, color = Color.Gray)
+            }
+            Surface(
+                color = if (user.role == "ADMIN") Color(0xFF673AB7) else Color(0xFF9575CD),
+                shape = RoundedCornerShape(4.dp)
+            ) {
+                Text(
+                    user.role, 
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                    color = Color.White,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            IconButton(onClick = onDelete) {
+                Icon(Icons.Default.Delete, null, tint = Color.Red.copy(alpha = 0.6f))
+            }
+        }
+    }
+}
+
+@Composable
+fun AddStaffDialog(onDismiss: () -> Unit, onConfirm: (User) -> Unit) {
+    var name by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var role by remember { mutableStateOf("STAFF") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Add New Staff Member") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Full Name") }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("Email Address") }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text("Password") }, modifier = Modifier.fillMaxWidth())
+                
+                Text("Access Role:", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(selected = role == "STAFF", onClick = { role = "STAFF" })
+                    Text("Staff (POS Access)")
+                    Spacer(Modifier.width(16.dp))
+                    RadioButton(selected = role == "ADMIN", onClick = { role = "ADMIN" })
+                    Text("Admin (Full Access)")
+                }
+            }
+        },
+        confirmButton = {
+            Button(onClick = { 
+                if (name.isNotEmpty() && email.isNotEmpty()) {
+                    onConfirm(User(
+                        uid = "U-${(1000..9999).random()}",
+                        name = name,
+                        email = email,
+                        role = role
+                    ))
+                }
+            }) {
+                Text("Create Account")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
+}
 @Composable fun CountriesScreen() = ModulePlaceholder("Countries Settings", Icons.Default.Public)
 @Composable fun DamageProductScreen() = ModulePlaceholder("Damage Products", Icons.Default.BrokenImage)
 @Composable fun DocumentScreen() = ModulePlaceholder("Documents & Invoices", Icons.Default.Description)
@@ -307,7 +453,7 @@ fun ItemDataEntryScreen(viewModel: SalesViewModel) {
 }
 
 @Composable
-fun ManagementDashboard(viewModel: SalesViewModel) {
+fun ManagementDashboard(viewModel: SalesViewModel, onNavigate: (com.example.salespossystem.Screen) -> Unit) {
     val totalProducts = viewModel.products.size
     val totalCustomers = viewModel.customers.size
     val totalSuppliers = viewModel.suppliers.size
@@ -330,17 +476,23 @@ fun ManagementDashboard(viewModel: SalesViewModel) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            QuickSettingItem("Tax Settings", Icons.Default.Percent, Modifier.weight(1f))
-            QuickSettingItem("Payment Methods", Icons.Default.CreditCard, Modifier.weight(1f))
-            QuickSettingItem("Company Profile", Icons.Default.Business, Modifier.weight(1f))
+            QuickSettingItem("Tax Settings", Icons.Default.Percent, Modifier.weight(1f)) {
+                onNavigate(com.example.salespossystem.Screen.TaxRates)
+            }
+            QuickSettingItem("Payment Methods", Icons.Default.CreditCard, Modifier.weight(1f)) {
+                onNavigate(com.example.salespossystem.Screen.PaymentTypes)
+            }
+            QuickSettingItem("Company Profile", Icons.Default.Business, Modifier.weight(1f)) {
+                onNavigate(com.example.salespossystem.Screen.Company)
+            }
         }
     }
 }
 
 @Composable
-fun QuickSettingItem(label: String, icon: ImageVector, modifier: Modifier = Modifier) {
+fun QuickSettingItem(label: String, icon: ImageVector, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
     Card(
-        modifier = modifier.height(100.dp),
+        modifier = modifier.height(100.dp).clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
@@ -483,7 +635,88 @@ fun PaymentMethodRow(name: String, onDelete: () -> Unit) {
     }
 }
 
-@Composable fun PriceListScreen() = ModulePlaceholder("Dynamic Price List", Icons.Default.FormatListBulleted)
+@Composable
+fun PriceListScreen(viewModel: SalesViewModel) {
+    var searchQuery by remember { mutableStateOf("") }
+    
+    val filteredProducts = viewModel.products.filter { 
+        it.name.contains(searchQuery, ignoreCase = true) || it.barcode.contains(searchQuery)
+    }
+
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        SimpleModuleHeader("Product Price List", Icons.Default.FormatListBulleted)
+
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            label = { Text("Search products...") },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            leadingIcon = { Icon(Icons.Default.Search, null) },
+            shape = RoundedCornerShape(12.dp)
+        )
+
+        Card(
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                // Table Header
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.05f))
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Product Name", Modifier.weight(1.5f), fontWeight = FontWeight.Bold)
+                    Text("Barcode", Modifier.weight(1f), fontWeight = FontWeight.Bold)
+                    Text("Unit", Modifier.weight(0.5f), fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+                    Text("Sale Price", Modifier.weight(1f), fontWeight = FontWeight.Bold, textAlign = TextAlign.End)
+                }
+                
+                HorizontalDivider(thickness = 1.dp, color = Color.LightGray.copy(alpha = 0.5f))
+
+                if (filteredProducts.isEmpty()) {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("No products found.", color = Color.Gray)
+                    }
+                } else {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(filteredProducts) { product ->
+                            PriceListItemRow(product, viewModel.currencySymbol)
+                            HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray.copy(alpha = 0.3f))
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PriceListItemRow(product: ProductItem, currency: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1.5f)) {
+            Text(product.name, fontWeight = FontWeight.SemiBold)
+            Text(product.group, fontSize = 11.sp, color = Color.Gray)
+        }
+        Text(product.barcode, Modifier.weight(1f), fontSize = 13.sp, color = Color.Gray)
+        Text(product.unit, Modifier.weight(0.5f), fontSize = 13.sp, textAlign = TextAlign.Center)
+        Text(
+            "$currency${product.salePrice}", 
+            Modifier.weight(1f), 
+            fontWeight = FontWeight.Bold, 
+            color = MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.End
+        )
+    }
+}
 @Composable fun ProductGalleryScreen() = ModulePlaceholder("Product Gallery", Icons.Default.Collections)
 
 @Composable
@@ -563,7 +796,12 @@ fun CustomerSupplierScreen(viewModel: SalesViewModel) {
             isSupplier = selectedTab == 1,
             onDismiss = { showAddDialog = false },
             onConfirm = { name, phone ->
-                val newEntity = Customer(id = name + phone, name = name, phone = phone)
+                val newEntity = Customer(
+                    id = "CUST-${(1000..9999).random()}", 
+                    name = name, 
+                    phone = phone,
+                    userName = viewModel.currentUser?.name ?: "Admin"
+                )
                 if (selectedTab == 0) viewModel.addCustomer(newEntity) else viewModel.addSupplier(newEntity)
                 showAddDialog = false
             }
@@ -812,7 +1050,7 @@ fun SaleScreen(viewModel: SalesViewModel) {
                     
                     Spacer(Modifier.height(24.dp))
                     Button(
-                        onClick = { /* Process Payment */ },
+                        onClick = { viewModel.processPayment() },
                         modifier = Modifier.fillMaxWidth().height(56.dp),
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
@@ -834,10 +1072,11 @@ fun SaleScreen(viewModel: SalesViewModel) {
                     Text("Products", fontWeight = FontWeight.Bold, fontSize = 20.sp)
                     Spacer(Modifier.height(16.dp))
                     
-                    // Simple Search Placeholder
+                    var searchQuery by remember { mutableStateOf("") }
+                    
                     OutlinedTextField(
-                        value = "",
-                        onValueChange = {},
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
                         label = { Text("Search Products...") },
                         modifier = Modifier.fillMaxWidth(),
                         leadingIcon = { Icon(Icons.Default.Search, null) },
@@ -846,24 +1085,62 @@ fun SaleScreen(viewModel: SalesViewModel) {
                     
                     Spacer(Modifier.height(16.dp))
                     
-                    // Dummy Product List for Demo
-                    val dummyProducts = listOf(
-                        ProductItem(barcode = "1", name = "Coffee", salePrice = "5.00", unit = "Cup"),
-                        ProductItem(barcode = "2", name = "Burger", salePrice = "12.00", unit = "Pcs"),
-                        ProductItem(barcode = "3", name = "Pizza", salePrice = "25.00", unit = "Box"),
-                        ProductItem(barcode = "4", name = "Coke", salePrice = "2.50", unit = "Can")
-                    )
+                    val filteredProducts = if (searchQuery.isEmpty()) {
+                        viewModel.products
+                    } else {
+                        viewModel.products.filter { it.name.contains(searchQuery, ignoreCase = true) || it.barcode.contains(searchQuery) }
+                    }
                     
-                    LazyVerticalGrid(columns = GridCells.Adaptive(120.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        items(dummyProducts.size) { index ->
-                            val product = dummyProducts[index]
-                            ProductGridItem(product, onClick = { viewModel.addToCart(product) })
+                    if (filteredProducts.isEmpty()) {
+                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("No products found.", color = Color.Gray)
+                        }
+                    } else {
+                        LazyVerticalGrid(columns = GridCells.Adaptive(120.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            items(filteredProducts.size) { index ->
+                                val product = filteredProducts[index]
+                                ProductGridItem(product, onClick = { viewModel.addToCart(product) })
+                            }
                         }
                     }
                 }
             }
         }
     }
+
+    viewModel.lastInvoice?.let { invoice ->
+        InvoiceDialog(
+            invoice = invoice,
+            currencySymbol = viewModel.currencySymbol,
+            onDismiss = { viewModel.clearInvoice() },
+            onPrint = { viewModel.clearInvoice() }
+        )
+    }
+}
+
+@Composable
+fun InvoiceDialog(invoice: Invoice, currencySymbol: String, onDismiss: () -> Unit, onPrint: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Invoice Processed") },
+        text = {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text("Invoice Number: ${invoice.invoiceNumber}")
+                Text("Total Amount: $currencySymbol ${invoice.totalAmount}", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                Text("Payment Method: ${invoice.paymentMethod}")
+            }
+        },
+        confirmButton = {
+            Button(onClick = onPrint) {
+                Text("Print & Close")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Close")
+            }
+        }
+    )
 }
 
 @Composable
